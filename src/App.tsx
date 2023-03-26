@@ -1,26 +1,38 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, { useState } from 'react';
+
+import AutoComplete from './components/AutoComplete/AutoComplete';
+import useDebounce from './hook/useDebounce';
+import useJokeSearch from './hook/useJokeSearch';
+
 import './App.css';
 
-function App() {
+const App: React.FC = () => {
+  const [inputValue, setInputValue] = useState('');
+  const debouncedInputValue = useDebounce(inputValue, 500);
+
+  const { options, isLoading, error } = useJokeSearch(debouncedInputValue);
+
+  const handleInputChange = (value: string) => {
+    setInputValue(value);
+  };
+
+  const handleOptionSelected = (value: string) => {
+    setInputValue(value);
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="appContainer">
+      <h1>Chuck Norris Jokes</h1>
+      <AutoComplete
+        options={options}
+        inputValue={inputValue}
+        onInputChange={handleInputChange}
+        onOptionSelected={handleOptionSelected}
+      />
+      {isLoading && <p>Loading...</p>}
+      {error && <p>{error}</p>}
     </div>
   );
-}
+};
 
 export default App;
